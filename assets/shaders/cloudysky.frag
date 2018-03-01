@@ -1,3 +1,7 @@
+// The sources were taken from <https://www.shadertoy.com/view/4tdSWr> and
+// are used soloely for educational purpose. All the credits go to the original
+// author of the work.
+
 #ifdef GL_ES
 #define LOWP lowp
 	precision mediump float;

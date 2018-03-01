@@ -1,3 +1,7 @@
+// The simplexNoise2 function was taken from the example presented at 
+// <http://www.geeks3d.com/20110317/shader-library-simplex-noise-glsl-opengl/>, 
+// all the credits go to the original author of the respective algorithm.
+
 #ifdef GL_ES
 #define LOWP lowp
 	precision mediump float;
@@ -83,12 +87,18 @@ float combine(float iterations, vec2 position, float persistence, float scale, f
     return (noise / sigTotal) * (highAmp - lowAmp) / 2.0 + (highAmp + lowAmp) / 2.0;
 }
 
-float filter(float noise) {
-	float dx = abs(gl_FragCoord.x - (u_position.x + u_size.x / 2.0)) / u_size.x;
-	float dy = abs(gl_FragCoord.y - (u_position.y + u_size.y / 2.0)) / u_size.y;
-	float d = dx * dx + dy * dy;
+float displacement(float dx) {
+	return sin((dx + u_time) * 0.15) + sin((dx + u_time * 5.45) * 0.025);
+}
+
+float gradient(float noise) {
+	float dx = gl_FragCoord.x - (u_position.x + u_size.x / 2.0);
+	float dy = gl_FragCoord.y - (u_position.y + u_size.y / 2.0);
+	float dxn = abs(dx) / u_size.x;
+	float dyn = abs(dy) / u_size.y; 
+	float d = dxn * dxn + dyn * dyn;
 	
-	float md = 0.5 * 0.9;
+	float md = (0.48 + 0.02 * displacement(dx)) * 0.9;
 	float g = d / (md * md);
 	
 	return noise * max(0.0, 1.0 - g);
@@ -103,5 +113,5 @@ float fade() {
 void main() {	
 	float noise = combine(4.0, vec2(gl_FragCoord.x + innerSpeed * u_time, gl_FragCoord.y), initialPersisence, initialScale, amplitude.x + fade() * density, amplitude.y);
 
-	gl_FragColor = vec4(vec3(1.0), filter(noise));
+	gl_FragColor = vec4(vec3(1.0), gradient(noise));
 }

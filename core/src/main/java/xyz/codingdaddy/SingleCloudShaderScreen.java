@@ -51,8 +51,8 @@ public class SingleCloudShaderScreen implements Screen {
 		stage = new Stage();
 		stage.getViewport().setCamera(camera);
 
-		Cloud cloud1 = new Cloud(200, 100);
-		cloud1.setPosition(500, 10);
+		Cloud cloud1 = new Cloud(400, 200);
+		cloud1.setPosition(280, 50);
 		
 		Cloud cloud2 = new Cloud(300, 100);
 		cloud2.setPosition(100, 10);
