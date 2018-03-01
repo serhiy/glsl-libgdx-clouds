@@ -17,7 +17,7 @@ const float initialPersisence = 0.5;
 const float initialScale = 0.01;
 const float density = 0.5;
 const float fadeSpeed = 0.025;
-const float innerSpeed = 2.0;
+const float innerSpeed = 5.0;
 const vec2 amplitude = vec2(-0.4, 1.0);
 
 const vec4 pParam = vec4(17.0*17.0, 34.0, 1.0, 7.0);
