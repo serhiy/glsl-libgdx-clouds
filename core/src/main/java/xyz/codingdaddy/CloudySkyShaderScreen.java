@@ -1,43 +1,42 @@
 package xyz.codingdaddy;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
-public class CloudShaderScreen implements Screen {
+public class CloudySkyShaderScreen implements Screen {
 
+	private final InputProcessor inputProcessor;
+	
 	private OrthographicCamera camera;
 	private SpriteBatch spriteBatch;
 	private ShaderProgram shaderProgram;
-	private Texture texture;
+	private Texture backgroundTexture;
 	private BitmapFont font;
 	
-	public CloudShaderScreen() {
-		this.spriteBatch = new SpriteBatch();
-		this.shaderProgram = new ShaderProgram(Gdx.files.internal("shaders/clouds.vert"), Gdx.files.internal("shaders/clouds4.frag"));
-		this.shaderProgram.pedantic = false;
+	public CloudySkyShaderScreen(InputProcessor inputProcessor) {
+		this.inputProcessor = inputProcessor;
 		
-		Gdx.app.log("meke", "Loading this crap.");
-		if (!this.shaderProgram.getLog().isEmpty()) {
-			Gdx.app.error("meke", this.shaderProgram.getLog().toString());
+		spriteBatch = new SpriteBatch();
+		
+		ShaderProgram.pedantic = false;
+		shaderProgram = new ShaderProgram(Gdx.files.internal("shaders/default.vert"), Gdx.files.internal("shaders/cloudysky.frag"));
+
+		if (!shaderProgram.getLog().isEmpty()) {
+			Gdx.app.error("cloud-shader", shaderProgram.getLog().toString());
 		}
 		
-		Pixmap pixmap = new Pixmap(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), Format.RGB888);
-		pixmap.setColor(Color.BLUE);
-		pixmap.fillRectangle(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		texture = new Texture(pixmap);
-		pixmap.dispose();
+		backgroundTexture = Utils.createTexture(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), Color.BLUE);
 		
 		font = new BitmapFont();
+		font.setColor(Color.RED);
 		
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camera.translate(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
@@ -46,8 +45,7 @@ public class CloudShaderScreen implements Screen {
 	
 	@Override
 	public void show() {
-		// TODO Auto-generated method stub
-		
+		Gdx.input.setInputProcessor(inputProcessor);
 	}
 	
 	private float delta = 0;
@@ -63,20 +61,15 @@ public class CloudShaderScreen implements Screen {
 		
 		spriteBatch.setProjectionMatrix(camera.combined);
 		spriteBatch.begin();
-		spriteBatch.draw(texture, 0, 0);
 		spriteBatch.setShader(this.shaderProgram);
 		spriteBatch.getShader().setUniformf("u_time", this.delta);
-		//spriteBatch.getShader().setUniform2fv("u_resolution", new float[] { Gdx.graphics.getWidth(), Gdx.graphics.getHeight() }, 0, 2);
 		spriteBatch.getShader().setUniform2fv("u_resolution", new float[] { 400, 200 }, 0, 2);
-		spriteBatch.draw(texture, 0, 0);
-		
-//		if (!spriteBatch.getShader().getLog().isEmpty()) {
-//			Gdx.app.error("meke", spriteBatch.getShader().getLog().toString());
-//		}
+		spriteBatch.draw(backgroundTexture, 0, 0);
 		
 		spriteBatch.setShader(null);
 		
-		font.draw(spriteBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, 20);
+		font.draw(spriteBatch, "Click '1' to change the ShaderProgram.", 10, Gdx.graphics.getHeight() - 20);
+		font.draw(spriteBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight() - 40);		
 		
 		spriteBatch.end();
 	}
@@ -107,7 +100,10 @@ public class CloudShaderScreen implements Screen {
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
+		shaderProgram.dispose();
+		backgroundTexture.dispose();
+		font.dispose();
+		spriteBatch.dispose();
 		
 	}
 

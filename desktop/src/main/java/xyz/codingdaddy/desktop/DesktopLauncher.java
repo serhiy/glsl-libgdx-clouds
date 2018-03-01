@@ -17,7 +17,7 @@ public class DesktopLauncher {
 
     private static LwjglApplicationConfiguration getDefaultConfiguration() {
         LwjglApplicationConfiguration configuration = new LwjglApplicationConfiguration();
-        configuration.title = "cloud-shader";
+        configuration.title = "Procedural Real-time GLSL Clouds";
         configuration.width = 640;
         configuration.height = 480;
         for (int size : new int[] { 128, 64, 32, 16 }) {
